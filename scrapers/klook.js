@@ -1,20 +1,33 @@
 const { connect } = require('puppeteer-real-browser');
 
 const BASE_URL = 'https://www.klook.com/en-US/destination/c28-tokyo/1-things-to-do/';
+const IS_CLOUD = !!process.env.PUPPETEER_EXECUTABLE_PATH;
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function run(maxPages, onProgress, onBatchReady) {
-  onProgress('Klook: Launching real browser (bypassing Cloudflare)...');
+  onProgress(`Klook: Launching browser (${IS_CLOUD ? 'cloud/headless' : 'local'} mode)...`);
 
-  const { page, browser } = await connect({
-    headless: false,
-    turnstile: true,      // auto-solve Cloudflare Turnstile
-    fingerprint: true,     // randomize fingerprint
-    args: ['--no-proxy-server', '--lang=en-US'],
-  });
+  const connectOpts = {
+    headless: IS_CLOUD ? 'auto' : false,
+    turnstile: true,
+    fingerprint: true,
+    args: [
+      '--no-proxy-server',
+      '--lang=en-US',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+    ],
+  };
+
+  if (IS_CLOUD) {
+    connectOpts.customConfig = { chromePath: process.env.PUPPETEER_EXECUTABLE_PATH };
+  }
+
+  const { page, browser } = await connect(connectOpts);
 
   let totalNew = 0;
   let totalDup = 0;

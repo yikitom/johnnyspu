@@ -1,20 +1,33 @@
 const { connect } = require('puppeteer-real-browser');
 
 const BASE_URL = 'https://www.getyourguide.com/zh-cn/tokyo-l193/';
+const IS_CLOUD = !!process.env.PUPPETEER_EXECUTABLE_PATH;
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function run(maxPages, onProgress, onBatchReady) {
-  onProgress('GetYourGuide: Launching real browser (bypassing Cloudflare)...');
+  onProgress(`GetYourGuide: Launching browser (${IS_CLOUD ? 'cloud/headless' : 'local'} mode)...`);
 
-  const { page, browser } = await connect({
-    headless: false,
+  const connectOpts = {
+    headless: IS_CLOUD ? 'auto' : false,
     turnstile: true,
     fingerprint: true,
-    args: ['--no-proxy-server', '--lang=zh-CN'],
-  });
+    args: [
+      '--no-proxy-server',
+      '--lang=zh-CN',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+    ],
+  };
+
+  if (IS_CLOUD) {
+    connectOpts.customConfig = { chromePath: process.env.PUPPETEER_EXECUTABLE_PATH };
+  }
+
+  const { page, browser } = await connect(connectOpts);
 
   let totalNew = 0;
   let totalDup = 0;

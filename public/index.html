@@ -387,21 +387,6 @@
       }, 2000);
     }
 
-    // Detect if running on Netlify (not localhost) — hide scraper controls
-    const isCloud = !location.hostname.includes('localhost') && !location.hostname.includes('127.0.0.1');
-    if (isCloud) {
-      const scraperSection = document.querySelector('.scraper-section');
-      if (scraperSection) {
-        scraperSection.innerHTML = `
-          <h2>Scraper Controls</h2>
-          <div style="padding:16px;color:#8892b0;background:#12121f;border-radius:8px;">
-            Scraping requires a local Chrome browser and cannot run in the cloud.<br>
-            Run <code style="color:#4facfe">node server.js</code> locally and use <code style="color:#4facfe">http://localhost:3456</code> to trigger scraping.
-          </div>
-        `;
-      }
-    }
-
     // Init
     loadStats();
   </script>

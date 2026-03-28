@@ -1,0 +1,17 @@
+{
+  "name": "tokyo-experiences-dashboard",
+  "version": "1.0.0",
+  "description": "Tokyo experiences data dashboard with scraping from GetYourGuide & Klook",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "airtable": "^0.12.2",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "puppeteer": "^22.0.0",
+    "puppeteer-real-browser": "^1.4.4"
+  }
+}
